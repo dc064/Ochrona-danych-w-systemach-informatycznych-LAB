@@ -1,0 +1,5 @@
+bob' OR username = 'bach
+bob' OR username = 'john
+bob' OR username = 'root
+
+text1'), ('adam', 'text2') --
