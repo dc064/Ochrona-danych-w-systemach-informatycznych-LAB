@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Title:
+    <div th:text="${note.name}"></div>
+</h1>
+<ul>
+    <li sec:authorize="isAuthenticated()">Witaj, <span sec:authentication="name"></span></li>
+    <li><a class="nav-link" href="/">Strona domyslna</a></li>
+    <li sec:authorize="isAnonymous()"><a class="nav-link" href="/login">Logowanie</a></li>
+    <li sec:authorize="isAnonymous()"><a class="nav-link" href="/register">Rejestracja</a></li>
+    <li sec:authorize="isAuthenticated()"><a class="nav-link" href="/create_note">Dodaj notatke</a></li>
+    <li sec:authorize="isAuthenticated()"><a class="nav-link" href="/perform_logout">Wyloguj</a></li>
+</ul>
+
+<h3>Autor:
+    <div th:text="${note.user.username}"></div>
+</h3>
+
+<p>
+<div th:utext="${note.note}"></div>
+</p>
+
+
+<div th:if="${owner}">
+    <h3>Dostep przydzielony dla:</h3>
+    <ul>
+        <tr th:each="user : ${addedUsers}">
+            <li>
+
+                <div><label th:text="${user.username}"></label></div>
+
+            </li>
+        </tr>
+    </ul>
+
+    <h3>Udostepnij notatke:</h3>
+    <form method="post" th:object="${addUserAccessRequest}" th:action="@{/add_user/} + ${id}">
+        <label for="username">Username</label><br/>
+        <input type="text" id="username" name="username" th:field="*{username}" autofocus="autofocus"/> <br/>
+        <span class="validationError"
+              th:if="${#fields.hasErrors('username')}"
+              th:errors="*{username}">Username Error
+       </span>
+        <br/>
+        <input type="submit" value="Add user">
+    </form>
+</div>
+
+
+</body>
+</html>

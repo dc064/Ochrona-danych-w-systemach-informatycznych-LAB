@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tytuł</title>
+</head>
+
+<body>
+<h1>Dodaj notatke</h1>
+<ul>
+    <li sec:authorize="isAuthenticated()">Witaj, <span sec:authentication="name"></span></li>
+    <li><a class="nav-link" href="/">Strona domyslna</a></li>
+    <li sec:authorize="isAnonymous()"><a class="nav-link" href="/login">Logowanie</a></li>
+    <li sec:authorize="isAnonymous()"><a class="nav-link" href="/register">Rejestracja</a></li>
+    <li sec:authorize="isAuthenticated()"><a class="nav-link" href="/create_note">Dodaj notatki</a></li>
+    <li sec:authorize="isAuthenticated()"><a class="nav-link" href="/perform_logout">Wyloguj</a></li>
+</ul>
+<form method="post" th:object="${createNoteRequest}" th:action="@{/create_note}">
+
+    <div th:if="${#fields.hasErrors()}">
+        <span class="validationError">
+        Wystapil blad. Prosze naprawic bledy i sprobowac ponownie.
+        </span>
+    </div>
+    <p th:if="${createNoteError}" class="error">ERROR SERVER</p>
+
+    <label for="name">Nazwa notatki</label><br/>
+    <input type="text" id="name" name="name" th:field="*{name}" autofocus="autofocus"/> <br/>
+    <span class="validationError"
+          th:if="${#fields.hasErrors('name')}"
+          th:errors="*{name}">Name Error
+    </span>
+    <br>
+
+    <label for="note">Napisz, co leży Ci na sercu. <br/> 
+        Dozwolone elementy (pozostale beda pomijane) : {"a" z "href", "p", "div", "i", "b", "em", "blockquote", "tt", "strong",
+        "br", "ul", "ol", "li", "quote", "ecode", "img" z "src", "h1", "h2", "h3", "h4", "h5"}</label><br/>
+    <textarea id="note" name="note" th:field="*{note}" autofocus="autofocus"></textarea> <br/>
+    <span class="validationError"
+          th:if="${#fields.hasErrors('note')}"
+          th:errors="*{note}">Note Error
+    </span>
+    <br>
+
+    <label for="password">Haslo (opcjonalnie, aby dodatkowo zabezpieczyc notatki)</label><br/>
+    <input type="password" id="password" th:field="*{password}" name="active"/><br/>
+    <span class="validationError"
+          th:if="${#fields.hasErrors('password')}"
+          th:errors="*{password}">Password Error
+    </span>
+    <br>
+
+    <h6>
+        Sila Twojego hasla:
+    </h6>
+    <span id="StrengthDisp" class="badge displayBadge"></span>
+
+    <br>
+
+    <label for="isPublic">Udostepnij jako notatka publiczna</label><br/>
+    <input type="checkbox" id="isPublic" name="isPublic" th:field="*{isPublic}" th:checked="${flag} ? 'checked'">
+    <span class="validationError"
+          th:if="${#fields.hasErrors('isPublic')}"
+          th:errors="*{isPublic}">Password Error
+    </span>
+    <br>
+
+    <input type="submit" value="Create">
+
+</form>
+
+<script>
+    let timeout;
+
+    let password = document.getElementById('password')
+    let strengthBadge = document.getElementById('StrengthDisp')
+
+
+    let strongPassword = new RegExp('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{10,})')
+    let mediumPassword = new RegExp('((?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,}))')
+    
+    function StrengthChecker(PasswordParameter) {
+        if (strongPassword.test(PasswordParameter)) {
+            strengthBadge.style.backgroundColor = "green"
+            strengthBadge.textContent = 'Silne'
+        } else if (mediumPassword.test(PasswordParameter)) {
+            strengthBadge.style.backgroundColor = 'yellow'
+            strengthBadge.textContent = 'Srednie'
+        } else {
+            strengthBadge.style.backgroundColor = 'red'
+            strengthBadge.textContent = 'Slabe'
+        }
+    }
+
+    password.addEventListener("input", () => {
+
+        strengthBadge.style.display = 'block'
+        clearTimeout(timeout);
+
+        timeout = setTimeout(() => StrengthChecker(password.value), 500);
+
+        if (password.value.length !== 0) {
+            strengthBadge.style.display != 'block'
+        } else {
+            strengthBadge.style.display = 'none'
+        }
+    });
+</script>
+
+</body>
+</html>

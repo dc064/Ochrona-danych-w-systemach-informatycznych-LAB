@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tytul</title>
+</head>
+<body>
+<h1>Strona glowna</h1>
+<ul>
+    <li sec:authorize="isAuthenticated()">Witaj, <span sec:authentication="name"></span></li>
+    <li><a class="nav-link" href="/">Strona domyslna</a></li>
+    <li sec:authorize="isAnonymous()"><a class="nav-link" href="/login">Zaloguj</a></li>
+    <li sec:authorize="isAnonymous()"><a class="nav-link" href="/register">Rejestracja</a></li>
+    <li sec:authorize="isAuthenticated()"><a class="nav-link" href="/create_note">Dodaj notatki</a></li>
+    <li sec:authorize="isAuthenticated()"><a class="nav-link" href="/reset_passwd">Zresetuj haslo</a></li>
+    <li sec:authorize="isAuthenticated()"><a class="nav-link" href="/perform_logout">Wyloguj</a></li>
+</ul>
+<p th:if="${element_not_found}" class="error">Nie znaleziono</p>
+<div sec:authorize="isAuthenticated()">
+    <h3>Twoje notatki:</h3>
+    <ul>
+        <tr th:each="note : ${my_notes}">
+            <li>
+
+                <div>Tytul: <label th:text="${note.name}"></label></div>
+                <div>Autor: <label th:text="${note.user.username}"></label></label></div>
+                <div>Link: <a th:href="@{'/show_note/' + ${note.id}}">Link</a></div>
+
+            </li>
+        </tr>
+    </ul>
+    <h3>Notatki udostepnione Tobie:</h3>
+    <ul>
+        <tr th:each="note : ${access_granted}">
+            <li>
+
+                <div>Tytul: <label th:text="${note.name}"></label></div>
+                <div>Autor: <label th:text="${note.user.username}"></label></label></div>
+                <div>Link: <a th:href="@{'/show_note/' + ${note.id}}">Link</a></div>
+
+            </li>
+        </tr>
+    </ul>
+<h3>Publiczne notatki:</h3>
+<ul>
+    <tr th:each="note : ${public_notes}">
+        <li>
+
+            <div>Tytul: <label th:text="${note.name}"></label></div>
+            <div>Autor: <label th:text="${note.user.username}"></label></label></div>
+            <div>Link: <a th:href="@{'/show_note/' + ${note.id}}">Link</a></div>
+
+        </li>
+    </tr>
+</ul>
+</div>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tytul</title>
+
+
+</head>
+<body>
+
+<h1>Rejestracja</h1>
+<ul>
+    <li sec:authorize="isAuthenticated()">Witaj, <span sec:authentication="name"></span></li>
+    <li><a class="nav-link" href="/">Strona domyslna</a></li>
+    <li sec:authorize="isAnonymous()"><a class="nav-link" href="/login">Logowanie</a></li>
+    <li sec:authorize="isAnonymous()"><a class="nav-link" href="/register">Rejestracja</a></li>
+    <li sec:authorize="isAuthenticated()"><a class="nav-link" href="/create_note">Dodaj notatki</a></li>
+    <li sec:authorize="isAuthenticated()"><a class="nav-link" href="/perform_logout">Wyloguj</a></li>
+</ul>
+<form method="post" th:object="${createUserRequest}" th:action="@{/register}">
+
+    <p th:if="${registerError}" class="error">Konto z podanymi danymi (nick/email) istnieje</p>
+
+    <div th:if="${#fields.hasErrors()}">
+        <span class="validationError">
+        Prosze naprawic bledy i sprobowac ponownie.
+        </span>
+    </div>
+
+    <label for="username">Username</label><br/>
+    <input type="text" id="username" name="username" th:field="*{username}" autofocus="autofocus"/> <br/>
+    <span class="validationError"
+          th:if="${#fields.hasErrors('username')}"
+          th:errors="*{username}">Username Error
+    </span>
+    <br>
+
+    <label for="email">Email</label><br/>
+    <input id="email" name="email" th:field="*{email}" autofocus="autofocus"></input> <br/>
+    <span class="validationError"
+          th:if="${#fields.hasErrors('email')}"
+          th:errors="*{email}">Note Error
+    </span>
+    <br>
+
+    <label for="password">Password</label><br/>
+    <input type="password" id="password" th:field="*{password}" name="active"/><br/>
+    <span class="validationError"
+          th:if="${#fields.hasErrors('password')}"
+          th:errors="*{password}">Password Error
+    </span>
+
+    <br>
+    <h6>
+        Sila Twojego hasla:
+    </h6>
+    <span id="StrengthDisp" class="badge displayBadge">Wpisz haslo...</span>
+
+    <br>
+    <br>
+
+    <input type="checkbox" name="shoeSize" value="1" style="display:none !important" tabindex="-1" autocomplete="off">
+
+
+    <input type="submit" value="Create">
+</form>
+
+<script>
+    let timeout;
+
+    let password = document.getElementById('password')
+    let strengthBadge = document.getElementById('StrengthDisp')
+
+
+    let strongPassword = new RegExp('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{10,})')
+    let mediumPassword = new RegExp('((?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,}))')
+
+    function StrengthChecker(PasswordParameter) {
+
+        if (strongPassword.test(PasswordParameter)) {
+            strengthBadge.style.backgroundColor = "green"
+            strengthBadge.textContent = 'Silna'
+        } else if (mediumPassword.test(PasswordParameter)) {
+            strengthBadge.style.backgroundColor = 'yellow'
+            strengthBadge.textContent = 'Srednia'
+        } else {
+            strengthBadge.style.backgroundColor = 'red'
+            strengthBadge.textContent = 'Slaba'
+        }
+    }
+
+    password.addEventListener("input", () => {
+
+        strengthBadge.style.display = 'block'
+        clearTimeout(timeout);
+
+        timeout = setTimeout(() => StrengthChecker(password.value), 500);
+
+        if (password.value.length !== 0) {
+            strengthBadge.style.display != 'block'
+        } else {
+            strengthBadge.style.display = 'none'
+        }
+    });
+</script>
+</body>
+</html>
